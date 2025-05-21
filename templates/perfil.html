@@ -26,9 +26,26 @@
         <label>Email:</label><input id="emailusuario" name="emailusuario" type="text" placeholder="Email" value="{{perfilusuario.email}}" required></label>
         <label>Usuario:</label><input id="nomeusuario" name="nomeusuario" type="text" placeholder="Usuario" value="{{perfilusuario.nome}}" required></label>
         <label>Nome completo:</label><input id="nomecompleto" name="nomecompleto" type="text" placeholder="Nome completo" value="{{perfilusuario.nomecompleto}}" required></label>
+        <br>
+        <label>Sexo:</label>
+        <br>
+        {% if perfilusuario.sexo == 'M' %}
+          <select id="sexo" name="sexo" placeholder="Sexo" required>>
+            <option value="M" selected>Masculino</option>
+            <option value="F" >Feminino</option>
+          </select>
+        {% else %}
+          <select id="sexo" name="sexo" placeholder="Sexo" required>>
+            <option value="M" >Masculino</option>
+            <option value="F" selected>Feminino</option>
+          </select>
+        {% endif %}
+        <br>
+        <br>
+        <label>Dt nasc.</label><input id="dtnasc" name="dtnasc" type="date" placeholder="Data de nascimento" value="{{perfilusuario.dtnasc}}" required></label>
         <label>Senha:</label><input id="senha" name="senha" type="password" placeholder="Senha" value="{{perfilusuario.senha}}"></label required>
         <label>Repita:</label><input id="senharepita" name="senharepita" type="password" placeholder="Repita a senha" value="{{perfilusuario.senha}}" required></label>
-        <label>Dt nasc.</label><input id="dtnasc" name="dtnasc" type="date" placeholder="Data de nascimento" value="{{perfilusuario.dtnasc}}" required></label>
+
         <input type="submit" class="button" value="Alterar">
       </form>
       <div class="signup">

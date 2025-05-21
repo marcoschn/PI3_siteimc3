@@ -16,10 +16,10 @@ app=Flask(__name__)
 
 app.secret_key = 'passpi2univesp'
 
-app.config['MYSQL_HOST'] = 'localhost'
+app.config['MYSQL_HOST'] = '212.85.12.121'
 app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = 'qwerty'
-app.config['MYSQL_DB'] = 'univespi2'
+app.config['MYSQL_PASSWORD'] = 'UnivPi2025!'
+app.config['MYSQL_DB'] = 'univespi3'
 
 mysql = MySQL(app)
 
@@ -79,8 +79,8 @@ def home():
         		                else '0'
         	                end) as status
                         from 
-        	                univespi2.registros 
-                        inner join univespi2.usuarios on registros.regcodusuario = usuarios.codusuario
+        	                univespi3.registros 
+                        inner join univespi3.usuarios on registros.regcodusuario = usuarios.codusuario
                         where 
         	                registros.regcodusuario = % s 
                         order by 
@@ -101,21 +101,21 @@ def visualizarcomp():
         sqldestinatarios = """SELECT 
         	        usuorigem.nome AS usuorigemnome, 
         	        dadosusuorigem.nome AS nomecompletoorigem, 
-        	        univespi2.compartilhamento.autorizar, 
-        	        univespi2.compartilhamento.usuorigem, 
-        	        univespi2.compartilhamento.usudestino 
+        	        univespi3.compartilhamento.autorizar, 
+        	        univespi3.compartilhamento.usuorigem, 
+        	        univespi3.compartilhamento.usudestino 
                 FROM 
-        	        univespi2.usuarios usuorigem 
-        	        INNER JOIN univespi2.dadosusuario dadosusuorigem 
+        	        univespi3.usuarios usuorigem 
+        	        INNER JOIN univespi3.dadosusuario dadosusuorigem 
         	        ON usuorigem.codusuario = dadosusuorigem.codusuario 
-        	        INNER JOIN univespi2.compartilhamento 
-        	        ON usuorigem.codusuario = univespi2.compartilhamento.usuorigem 
-        	        INNER JOIN univespi2.usuarios usudestino 
-        	        ON univespi2.compartilhamento.usudestino = usudestino.codusuario 
-        	        INNER JOIN univespi2.dadosusuario dadosusuodestino 
+        	        INNER JOIN univespi3.compartilhamento 
+        	        ON usuorigem.codusuario = univespi3.compartilhamento.usuorigem 
+        	        INNER JOIN univespi3.usuarios usudestino 
+        	        ON univespi3.compartilhamento.usudestino = usudestino.codusuario 
+        	        INNER JOIN univespi3.dadosusuario dadosusuodestino 
         	        ON usudestino.codusuario = dadosusuodestino.codusuario 
                 WHERE 
-        	        univespi2.compartilhamento.usudestino = % s
+        	        univespi3.compartilhamento.usudestino = % s
         	    order by 
         	        usuorigemnome"""
         cdestinatarios.execute(sqldestinatarios, (session['id'],))
@@ -161,8 +161,8 @@ def ver_comp():
             		                else '0'
             	                end) as status
                             from 
-            	                univespi2.registros 
-                            inner join univespi2.usuarios on registros.regcodusuario = usuarios.codusuario
+            	                univespi3.registros 
+                            inner join univespi3.usuarios on registros.regcodusuario = usuarios.codusuario
                             where 
             	                registros.regcodusuario = % s order by dtregistro desc"""
             print(idorigem)
@@ -174,21 +174,21 @@ def ver_comp():
             sqldestinatarios = """SELECT 
                         	        usuorigem.nome AS usuorigemnome, 
                         	        dadosusuorigem.nome AS nomecompletoorigem, 
-                        	        univespi2.compartilhamento.autorizar, 
-                        	        univespi2.compartilhamento.usuorigem, 
-                        	        univespi2.compartilhamento.usudestino 
+                        	        univespi3.compartilhamento.autorizar, 
+                        	        univespi3.compartilhamento.usuorigem, 
+                        	        univespi3.compartilhamento.usudestino 
                                 FROM 
-                        	        univespi2.usuarios usuorigem 
-                        	        INNER JOIN univespi2.dadosusuario dadosusuorigem 
+                        	        univespi3.usuarios usuorigem 
+                        	        INNER JOIN univespi3.dadosusuario dadosusuorigem 
                         	        ON usuorigem.codusuario = dadosusuorigem.codusuario 
-                        	        INNER JOIN univespi2.compartilhamento 
-                        	        ON usuorigem.codusuario = univespi2.compartilhamento.usuorigem 
-                        	        INNER JOIN univespi2.usuarios usudestino 
-                        	        ON univespi2.compartilhamento.usudestino = usudestino.codusuario 
-                        	        INNER JOIN univespi2.dadosusuario dadosusuodestino 
+                        	        INNER JOIN univespi3.compartilhamento 
+                        	        ON usuorigem.codusuario = univespi3.compartilhamento.usuorigem 
+                        	        INNER JOIN univespi3.usuarios usudestino 
+                        	        ON univespi3.compartilhamento.usudestino = usudestino.codusuario 
+                        	        INNER JOIN univespi3.dadosusuario dadosusuodestino 
                         	        ON usudestino.codusuario = dadosusuodestino.codusuario 
                                 WHERE 
-                        	        univespi2.compartilhamento.usudestino = % s
+                        	        univespi3.compartilhamento.usudestino = % s
                         	    order by 
                         	        usuorigemnome"""
             cdestinatarios.execute(sqldestinatarios, (session['id'],))
@@ -215,9 +215,10 @@ def perfil():
             usuarios.codusuario as idusuario, 
             usuarios.nome as nome, 
             usuarios.email as email  ,
+            dadosusuario.sexo as sexo ,
             usuarios.senha as senha
-            FROM univespi2.usuarios 
-            inner JOIN univespi2.dadosusuario  
+            FROM univespi3.usuarios 
+            inner JOIN univespi3.dadosusuario  
             ON usuarios.codusuario = dadosusuario.codusuario 
             WHERE usuarios.codusuario = """ + str(session['id'])
             print(sqlusuario)
@@ -240,6 +241,7 @@ def atualizaperfil():
             email = request.form['emailusuario']
             nomecompleto = request.form['nomecompleto']
             dtnascimento = request.form['dtnasc']
+            sexo = request.form['sexo']
             senha=request.form['senha']
             senharepita = request.form['senharepita']
             if usuario != usuarioinicial:
@@ -279,9 +281,11 @@ def atualizaperfil():
             print(emailinicial)
             print(senha)
             print(senharepita)
+            print(sexo)
+
             if resultado == 0:
                 cursorregistros = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-                sqlatualizaperfil="UPDATE dadosusuario SET nome = '" + nomecompleto + "', dtnascimento='" + dtnascimento + "' where codusuario=" + str(session['id'])
+                sqlatualizaperfil="UPDATE dadosusuario SET nome = '" + nomecompleto + "', dtnascimento='" + dtnascimento + "', sexo='" + sexo + "' where codusuario=" + str(session['id'])
                 cursorregistros.execute(sqlatualizaperfil)
                 sqlatualizausuario = "UPDATE usuarios SET nome = '" + usuario + "', email='" + email + "', senha='" + senha + "' where codusuario=" + str(session['id'])
                 cursorregistros.execute(sqlatualizausuario)
@@ -326,8 +330,8 @@ def grafico():
                 		                else '0'
                 	                end) as status
                                 from 
-                	                univespi2.registros 
-                                inner join univespi2.usuarios on registros.regcodusuario = usuarios.codusuario
+                	                univespi3.registros 
+                                inner join univespi3.usuarios on registros.regcodusuario = usuarios.codusuario
                                 where 
                 	                registros.regcodusuario = % s 
                                 order by 
@@ -356,21 +360,21 @@ def compartilhamento():
         sqlcompartilhamento="""SELECT 
 	        usudestino.nome AS usudestinonome, 
 	        dadosusuodestino.nome AS nomecompletodestino, 
-	        univespi2.compartilhamento.autorizar, 
-	        univespi2.compartilhamento.usuorigem, 
-	        univespi2.compartilhamento.usudestino 
+	        univespi3.compartilhamento.autorizar, 
+	        univespi3.compartilhamento.usuorigem, 
+	        univespi3.compartilhamento.usudestino 
         FROM 
-	        univespi2.usuarios usuorigem 
-	        INNER JOIN univespi2.dadosusuario dadosusuorigem 
+	        univespi3.usuarios usuorigem 
+	        INNER JOIN univespi3.dadosusuario dadosusuorigem 
 	        ON usuorigem.codusuario = dadosusuorigem.codusuario 
-	        INNER JOIN univespi2.compartilhamento 
-	        ON usuorigem.codusuario = univespi2.compartilhamento.usuorigem 
-	        INNER JOIN univespi2.usuarios usudestino 
-	        ON univespi2.compartilhamento.usudestino = usudestino.codusuario 
-	        INNER JOIN univespi2.dadosusuario dadosusuodestino 
+	        INNER JOIN univespi3.compartilhamento 
+	        ON usuorigem.codusuario = univespi3.compartilhamento.usuorigem 
+	        INNER JOIN univespi3.usuarios usudestino 
+	        ON univespi3.compartilhamento.usudestino = usudestino.codusuario 
+	        INNER JOIN univespi3.dadosusuario dadosusuodestino 
 	        ON usudestino.codusuario = dadosusuodestino.codusuario 
         WHERE 
-	        univespi2.compartilhamento.usuorigem = % s
+	        univespi3.compartilhamento.usuorigem = % s
 	    order by 
 	        usudestino"""
 
@@ -422,21 +426,21 @@ def sugestoes():
         sqldestinatarios = """SELECT 
         	        usuorigem.nome AS usuorigemnome, 
         	        dadosusuorigem.nome AS nomecompletoorigem, 
-        	        univespi2.compartilhamento.autorizar, 
-        	        univespi2.compartilhamento.usuorigem, 
-        	        univespi2.compartilhamento.usudestino 
+        	        univespi3.compartilhamento.autorizar, 
+        	        univespi3.compartilhamento.usuorigem, 
+        	        univespi3.compartilhamento.usudestino 
                 FROM 
-        	        univespi2.usuarios usuorigem 
-        	        INNER JOIN univespi2.dadosusuario dadosusuorigem 
+        	        univespi3.usuarios usuorigem 
+        	        INNER JOIN univespi3.dadosusuario dadosusuorigem 
         	        ON usuorigem.codusuario = dadosusuorigem.codusuario 
-        	        INNER JOIN univespi2.compartilhamento 
-        	        ON usuorigem.codusuario = univespi2.compartilhamento.usuorigem 
-        	        INNER JOIN univespi2.usuarios usudestino 
-        	        ON univespi2.compartilhamento.usudestino = usudestino.codusuario 
-        	        INNER JOIN univespi2.dadosusuario dadosusuodestino 
+        	        INNER JOIN univespi3.compartilhamento 
+        	        ON usuorigem.codusuario = univespi3.compartilhamento.usuorigem 
+        	        INNER JOIN univespi3.usuarios usudestino 
+        	        ON univespi3.compartilhamento.usudestino = usudestino.codusuario 
+        	        INNER JOIN univespi3.dadosusuario dadosusuodestino 
         	        ON usudestino.codusuario = dadosusuodestino.codusuario 
                 WHERE 
-        	        univespi2.compartilhamento.usudestino = % s
+        	        univespi3.compartilhamento.usudestino = % s
         	    order by 
         	        usuorigemnome"""
 
@@ -446,19 +450,19 @@ def sugestoes():
 
         cursormsgsugestoes = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
         sqlmsgsugestoes="""SELECT 
-                univespi2.sugestoes.idmsg as idmsg,
-	            univespi2.dadosusuario.nome as nomeorigem, 
-	            univespi2.sugestoes.de as idorigem, 
+                univespi3.sugestoes.idmsg as idmsg,
+	            univespi3.dadosusuario.nome as nomeorigem, 
+	            univespi3.sugestoes.de as idorigem, 
 	            sugestoes.dt as dtmsg, 
-	            univespi2.sugestoes.mensagem as msg 
+	            univespi3.sugestoes.mensagem as msg 
             FROM 
-	            univespi2.usuarios 
-	            INNER JOIN univespi2.sugestoes 
-	            ON univespi2.usuarios.codusuario = univespi2.sugestoes.de 
-	            INNER JOIN univespi2.dadosusuario 
-	            ON univespi2.usuarios.codusuario = univespi2.dadosusuario.codusuario 
+	            univespi3.usuarios 
+	            INNER JOIN univespi3.sugestoes 
+	            ON univespi3.usuarios.codusuario = univespi3.sugestoes.de 
+	            INNER JOIN univespi3.dadosusuario 
+	            ON univespi3.usuarios.codusuario = univespi3.dadosusuario.codusuario 
             WHERE 
-	            univespi2.sugestoes.para = %s order by dtmsg desc"""
+	            univespi3.sugestoes.para = %s order by dtmsg desc"""
         cursormsgsugestoes.execute(sqlmsgsugestoes, (session['id'],))
         dadosmsgsugestoes = cursormsgsugestoes.fetchall()
         rcmsgsugestoes = cursormsgsugestoes.rowcount
@@ -561,7 +565,7 @@ def add_registro():
 def get_medicao(id):
     #print(id)
     if session['loggedin'] == True:
-        querysql="select codregistro, DATE_FORMAT(dtregistro, '%Y-%m-%d') as dt, alturam, pesokg from univespi2.registros where codregistro=" + id
+        querysql="select codregistro, DATE_FORMAT(dtregistro, '%Y-%m-%d') as dt, alturam, pesokg from univespi3.registros where codregistro=" + id
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
         cursor.execute(querysql)
         data = cursor.fetchall()
@@ -622,11 +626,17 @@ def logout():
 @app.route('/registrar', methods =['GET', 'POST'])
 def registrar():
     msg = ''
-    if request.method == 'POST' and 'nome' in request.form and 'password' in request.form and 'passwordconf' in request.form and 'email' in request.form :
+    if request.method == 'POST' and 'nome' in request.form and 'password' in request.form and 'passwordconf' in request.form and 'email' in request.form and 'dtnasc' in request.form and 'sexo' in request.form:
         username = request.form['nome']
         password = request.form['password']
         passwordconf = request.form['passwordconf']
         email = request.form['email']
+        dtnasc = request.form['dtnasc']
+        sexo = request.form['sexo']
+
+        print(sexo)
+        print(dtnasc)
+
 
         if password == passwordconf :
             cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
@@ -645,7 +655,7 @@ def registrar():
                 cursor.execute('select last_insert_id() from usuarios')
                 idusuario=cursor.lastrowid
                 #print(idusuario)
-                sqlinsertdados="INSERT INTO dadosusuario VALUES (" + str(idusuario) + ", '" + username + "', '1900-01-01')"
+                sqlinsertdados="INSERT INTO dadosusuario VALUES (" + str(idusuario) + ", '" + username + "', '" + dtnasc + "', '" + sexo +  "')"
                 #print(sqlinsertdados)
                 cursor.execute(sqlinsertdados)
                 mysql.connection.commit()

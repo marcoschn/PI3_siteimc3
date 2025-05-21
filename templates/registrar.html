@@ -18,6 +18,17 @@
       <form action="#">
         <input id="email" name="email" type="text" placeholder="Email" required>
         <input id="nome" name="nome" type="text" placeholder="Nome" required>
+        <br>
+        <label>Sexo:</label>
+        <br>
+        <select id="sexo" name="sexo" placeholder="Sexo" required>>
+          <option value="M" selected>Masculino</option>
+          <option value="F" >Feminino</option>
+        </select>
+        <br>
+        <br>
+
+        <label>Data de nascimento:</label><input id="dtnasc" name="dtnasc" type="date" value="1990-01-01" placeholder="Data nascimento">
         <input id="password" name="password" type="password" placeholder="Senha" required>
         <input id="passwordconf" name="passwordconf" type="password" placeholder="Repita a senha" required>
         <input type="submit" class="button" value="Cadastrar">
