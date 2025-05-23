@@ -103,7 +103,9 @@ def visualizarcomp():
         	        dadosusuorigem.nome AS nomecompletoorigem, 
         	        univespi3.compartilhamento.autorizar, 
         	        univespi3.compartilhamento.usuorigem, 
-        	        univespi3.compartilhamento.usudestino 
+        	        univespi3.compartilhamento.usudestino,
+        	        dadosusuorigem.dtnascimento,
+	                dadosusuorigem.sexo  
                 FROM 
         	        univespi3.usuarios usuorigem 
         	        INNER JOIN univespi3.dadosusuario dadosusuorigem 
@@ -121,6 +123,7 @@ def visualizarcomp():
         cdestinatarios.execute(sqldestinatarios, (session['id'],))
         vdestinatarios = cdestinatarios.fetchall()
         rcdestinatario=cdestinatarios.rowcount
+        print("registro")
         print(vdestinatarios)
         pesokg=0
         dadosgraf=0
@@ -169,14 +172,34 @@ def ver_comp():
             print(sqlorigem)
             cursor.execute(sqlorigem, (idorigem,))
             dadoscomp = cursor.fetchall()
+            print("dadoscomp")
             print(dadoscomp)
+            sqldadosusuario="""
+                                SELECT 
+	                            univespi3.usuarios.codusuario,
+	                            univespi3.usuarios.email,
+	                            univespi3.usuarios.nome,
+	                            univespi3.dadosusuario.nome,
+	                            univespi3.dadosusuario.dtnascimento,
+	                            univespi3.dadosusuario.sexo
+                                FROM 
+	                                univespi3.usuarios 
+	                            INNER JOIN univespi3.dadosusuario ON univespi3.usuarios.codusuario = univespi3.dadosusuario.codusuario 
+                                WHERE 
+	                                univespi3.usuarios.codusuario = % s"""
+            cursor.execute(sqldadosusuario, (idorigem,))
+            dadosusuario=cursor.fetchone()
+            print("dadosusuario")
+            print(dadosusuario)
             cdestinatarios = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
             sqldestinatarios = """SELECT 
                         	        usuorigem.nome AS usuorigemnome, 
                         	        dadosusuorigem.nome AS nomecompletoorigem, 
                         	        univespi3.compartilhamento.autorizar, 
                         	        univespi3.compartilhamento.usuorigem, 
-                        	        univespi3.compartilhamento.usudestino 
+                        	        univespi3.compartilhamento.usudestino,
+                        	        dadosusuorigem.dtnascimento,
+	                                dadosusuorigem.sexo 
                                 FROM 
                         	        univespi3.usuarios usuorigem 
                         	        INNER JOIN univespi3.dadosusuario dadosusuorigem 
@@ -194,12 +217,58 @@ def ver_comp():
             cdestinatarios.execute(sqldestinatarios, (session['id'],))
             vdestinatarios = cdestinatarios.fetchall()
             rcdestinatario = cdestinatarios.rowcount
+
             print(vdestinatarios)
             if rcdestinatario != 0:
-                return render_template('visualizarcomp.html', vdestinatarios=vdestinatarios, dadoscomp=dadoscomp)
+                #calculo da tmb (taxa metabólica basal)
+                i=0
+                for data in dadoscomp:
+                    if i==0:
+                        alturacm = data['alturam'] * 100
+                        dataregistro = data['dataregistro']
+                        peso = data['pesokg']
+                    else:
+                        break
+                    i=i+1
+
+                print("alturacm:")
+                print(alturacm)
+                print(dataregistro)
+                anodtregistro = dataregistro[-4:]
+                mesdtregistro = dataregistro[3:5]
+                diadtregistro=dataregistro[0:2]
+                print(anodtregistro)
+                print(mesdtregistro)
+                print(diadtregistro)
+                d1=datetime.date(int(anodtregistro),int(mesdtregistro),int(diadtregistro))
+
+                datediff=(d1 - dadosusuario['dtnascimento'])
+                idade=round(datediff.days / 365,2)
+                print(idade)
+                #cálculo Fórmula de Harris-Benedict (versão revisada) da taxa metabólica basal
+
+                if dadosusuario['sexo']=='M':
+                    tmb=round(88.362 + (13.397 * peso) + (4.799 * alturacm) - (5.677 * idade), 0)
+                    tmbsedentario = 1.2 * tmb
+                    tmbpoucoativo = 1.375 * tmb
+                    tmbativo = 1.55 * tmb
+                    tmbmuitoativo = 1.725 * tmb
+                    tmbextremamenteativo = 1.9 * tmb
+
+                else:
+                    tmb=round(447.593 + (9.247 * peso) + (3.098 * alturacm) - (4.330 * idade), 0)
+                    tmbsedentario = 1.2 * tmb
+                    tmbpoucoativo = 1.375 * tmb
+                    tmbativo = 1.55 * tmb
+                    tmbmuitoativo = 1.725 * tmb
+                    tmbextremamenteativo = 1.9 * tmb
+
+                print(tmb)
+
+                return render_template('visualizarcomp.html', vdestinatarios=vdestinatarios, dadoscomp=dadoscomp, dadosusuario=dadosusuario, tmb=tmb)
             else:
                 vdestinatarios = 0
-                return render_template('visualizarcomp.html', vdestinatarios=vdestinatarios, dadoscomp=dadoscomp)
+                return render_template('visualizarcomp.html', vdestinatarios=vdestinatarios, dadoscomp=dadoscomp, dadosusuario=dadosusuario, tmb=tmb)
 
     else:
         return redirect(url_for('index'))
