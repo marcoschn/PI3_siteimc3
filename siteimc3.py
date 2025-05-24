@@ -171,7 +171,11 @@ def ver_comp():
             print(idorigem)
             print(sqlorigem)
             cursor.execute(sqlorigem, (idorigem,))
+            linhas=cursor.execute(sqlorigem, (idorigem,))
             dadoscomp = cursor.fetchall()
+
+            print("linhas")
+            print(linhas)
             print("dadoscomp")
             print(dadoscomp)
             sqldadosusuario="""
@@ -189,8 +193,10 @@ def ver_comp():
 	                                univespi3.usuarios.codusuario = % s"""
             cursor.execute(sqldadosusuario, (idorigem,))
             dadosusuario=cursor.fetchone()
+
             print("dadosusuario")
             print(dadosusuario)
+
             cdestinatarios = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
             sqldestinatarios = """SELECT 
                         	        usuorigem.nome AS usuorigemnome, 
@@ -224,51 +230,57 @@ def ver_comp():
                 i=0
                 for data in dadoscomp:
                     if i==0:
-                        alturacm = data['alturam'] * 100
-                        dataregistro = data['dataregistro']
-                        peso = data['pesokg']
+                        if linhas > 0:
+                            alturacm = data['alturam'] * 100
+                            dataregistro = data['dataregistro']
+                            peso = data['pesokg']
                     else:
                         break
                     i=i+1
 
-                print("alturacm:")
-                print(alturacm)
-                print(dataregistro)
-                anodtregistro = dataregistro[-4:]
-                mesdtregistro = dataregistro[3:5]
-                diadtregistro=dataregistro[0:2]
-                print(anodtregistro)
-                print(mesdtregistro)
-                print(diadtregistro)
-                d1=datetime.date(int(anodtregistro),int(mesdtregistro),int(diadtregistro))
+                if linhas > 0:
+                    print("alturacm:")
+                    print(alturacm)
+                    print(dataregistro)
+                    anodtregistro = dataregistro[-4:]
+                    mesdtregistro = dataregistro[3:5]
+                    diadtregistro=dataregistro[0:2]
+                    print(anodtregistro)
+                    print(mesdtregistro)
+                    print(diadtregistro)
+                    d1=datetime.date(int(anodtregistro),int(mesdtregistro),int(diadtregistro))
 
-                datediff=(d1 - dadosusuario['dtnascimento'])
-                idade=round(datediff.days / 365,2)
-                print(idade)
-                #cálculo Fórmula de Harris-Benedict (versão revisada) da taxa metabólica basal
+                    datediff=(d1 - dadosusuario['dtnascimento'])
+                    idade=round(datediff.days / 365,2)
+                    print(idade)
+                    #cálculo Fórmula de Harris-Benedict (versão revisada) da taxa metabólica basal
 
-                if dadosusuario['sexo']=='M':
-                    tmb=round(88.362 + (13.397 * peso) + (4.799 * alturacm) - (5.677 * idade), 0)
-                    tmbsedentario = 1.2 * tmb
-                    tmbpoucoativo = 1.375 * tmb
-                    tmbativo = 1.55 * tmb
-                    tmbmuitoativo = 1.725 * tmb
-                    tmbextremamenteativo = 1.9 * tmb
+                    if dadosusuario['sexo']=='M':
+                        tmb=round(88.362 + (13.397 * peso) + (4.799 * alturacm) - (5.677 * idade), 0)
+                        tmbsedentario = round(1.2 * tmb,0)
+                        tmbpoucoativo = round(1.375 * tmb,0)
+                        tmbativo = round(1.55 * tmb,0)
+                        tmbmuitoativo = round(1.725 * tmb,0)
+                        tmbextremamenteativo = round(1.9 * tmb,0)
+
+                    else:
+                        tmb=round(447.593 + (9.247 * peso) + (3.098 * alturacm) - (4.330 * idade), 0)
+                        tmbsedentario = round(1.2 * tmb,0)
+                        tmbpoucoativo = round(1.375 * tmb,0)
+                        tmbativo = round(1.55 * tmb,0)
+                        tmbmuitoativo = round(1.725 * tmb,0)
+                        tmbextremamenteativo = round(1.9 * tmb,)
+
+                    print(tmb)
+
+                    return render_template('visualizarcomp.html', vdestinatarios=vdestinatarios, dadoscomp=dadoscomp, dadosusuario=dadosusuario, tmb=tmb, dataregistro=dataregistro, tmbsedentario=tmbsedentario, tmbpoucoativo=tmbpoucoativo, tmbativo=tmbativo, tmbmuitoativo=tmbmuitoativo, tmbextremamenteativo=tmbextremamenteativo)
 
                 else:
-                    tmb=round(447.593 + (9.247 * peso) + (3.098 * alturacm) - (4.330 * idade), 0)
-                    tmbsedentario = 1.2 * tmb
-                    tmbpoucoativo = 1.375 * tmb
-                    tmbativo = 1.55 * tmb
-                    tmbmuitoativo = 1.725 * tmb
-                    tmbextremamenteativo = 1.9 * tmb
+                    return render_template('visualizarcomp.html', vdestinatarios=vdestinatarios, dadoscomp=dadoscomp, dadosusuario=dadosusuario)
 
-                print(tmb)
-
-                return render_template('visualizarcomp.html', vdestinatarios=vdestinatarios, dadoscomp=dadoscomp, dadosusuario=dadosusuario, tmb=tmb)
             else:
                 vdestinatarios = 0
-                return render_template('visualizarcomp.html', vdestinatarios=vdestinatarios, dadoscomp=dadoscomp, dadosusuario=dadosusuario, tmb=tmb)
+                return render_template('visualizarcomp.html', vdestinatarios=vdestinatarios, dadoscomp=dadoscomp, dadosusuario=dadosusuario)
 
     else:
         return redirect(url_for('index'))

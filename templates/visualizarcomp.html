@@ -31,7 +31,32 @@
 			{% endfor %}
 			</tbody>
 			</table>
-    </div>
+    	<br>
+			<table id="tmb" class="table table-striped table-bordered" style="width:100%">
+			<thead>
+				<tr>
+					<td>Taxa metabólica basal (TMB) com base no último registro ({{dataregistro}}) de acordo com o perfil:</td>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>TMB perfil sedentário: {{tmbsedentario}}</td>
+				</tr>
+				<tr>
+					<td>TMB perfil pouco ativo: {{tmbpoucoativo}}</td>
+				</tr>
+				<tr>
+					<td>TMB perfil ativo: {{tmbativo}}</td>
+				</tr>
+				<tr>
+					<td>TMB perfil muito ativo: {{tmbmuitoativo}}</td>
+				</tr>
+				<tr>
+					<td>TMB perfil extremamente ativo: {{tmbextremamenteativo}}</td>
+				</tr>
+			</tbody>
+			</table>
+	</div>
     <div class="col-md-4">
       {% with messages = get_flashed_messages()  %}
       {% if messages %}
