@@ -23,12 +23,6 @@ app.config['MYSQL_DB'] = 'univespi3'
 
 mysql = MySQL(app)
 
-#carregando grafico
-#data_loader_obj = data_loader.DataLoader()
-#DATA_SET_FULL = data_loader_obj.prepare_data_set_full()
-#DATA_SET_GROUPED = data_loader_obj.prepare_data_set_grouped()
-#fim
-
 
 @app.route("/")
 def index():
@@ -645,17 +639,6 @@ def delsugestao(id):
     else:
         return redirect(url_for('index'))
 
-
-@app.route('/<string:item>', methods=['GET'])
-def get_item_details(item):
-    """
-    the route for each "drilldown" item details
-    :param item:
-    :return:
-    """
-    filtered_data_set = [x for x in DATA_SET_FULL if x.get('ObservationDate') == item]
-
-    return render_template('details.html', template_data_set=filtered_data_set)
 
 @app.route('/add_registro', methods=['GET', 'POST'])
 def add_registro():
