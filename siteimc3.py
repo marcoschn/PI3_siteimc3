@@ -128,14 +128,17 @@ def visualizarcomp():
         pesokg=0
         dadosgraf=0
         dtregistro=0
+        iniciargrafico=0
 
         if rcdestinatario!=0:
-            return render_template('visualizarcomp.html', vdestinatarios=vdestinatarios, template_labels=dtregistro,
-                               template_values_confirmed=pesokg, dadosgraf=dadosgraf)
+            #return render_template('visualizarcomp.html', vdestinatarios=vdestinatarios, template_labels=dtregistro,
+            #                   template_values_confirmed=pesokg, dadosgraf=dadosgraf)
+            return render_template('visualizarcomp.html', vdestinatarios=vdestinatarios, iniciargrafico=iniciargrafico)
         else:
             vdestinatarios=0
-            return render_template('visualizarcomp.html', vdestinatarios=vdestinatarios, template_labels=dtregistro,
-                               template_values_confirmed=pesokg, dadosgraf=dadosgraf)
+            #return render_template('visualizarcomp.html', vdestinatarios=vdestinatarios, template_labels=dtregistro,
+            #                   template_values_confirmed=pesokg, dadosgraf=dadosgraf)
+            return render_template('visualizarcomp.html', vdestinatarios=vdestinatarios, iniciargrafico=iniciargrafico)
 
     return redirect(url_for('login'))
 
@@ -178,12 +181,27 @@ def ver_comp():
             print(linhas)
             print("dadoscomp")
             print(dadoscomp)
+
+            #preparar grafico
+            #dadosgraf = cursor.fetchall()
+
+            graphdtregistro = []
+            graphpesokg = []
+            for row in dadoscomp:
+                graphdtregistro.append(row['dataregistro'])
+                graphpesokg.append(row['pesokg'])
+            #fim
+
+            print("dadosgraf")
+            print(graphpesokg)
+            print(graphdtregistro)
+
             sqldadosusuario="""
                                 SELECT 
-	                            univespi3.usuarios.codusuario,
+	                            univespi3.usuarios.codusuario as codusuario,
 	                            univespi3.usuarios.email,
 	                            univespi3.usuarios.nome,
-	                            univespi3.dadosusuario.nome,
+	                            univespi3.dadosusuario.nome as ncompleto,
 	                            univespi3.dadosusuario.dtnascimento,
 	                            univespi3.dadosusuario.sexo
                                 FROM 
@@ -196,6 +214,8 @@ def ver_comp():
 
             print("dadosusuario")
             print(dadosusuario)
+            ncompleto=dadosusuario['ncompleto']
+            idusuario=dadosusuario['codusuario']
 
             cdestinatarios = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
             sqldestinatarios = """SELECT 
@@ -235,24 +255,40 @@ def ver_comp():
                             dataregistro = data['dataregistro']
                             peso = data['pesokg']
                     else:
-                        break
+                        if i == (linhas - 1):
+                            dtprimeiroregistro = data['dataregistro']
+                            pesoinicial = data['pesokg']
                     i=i+1
 
                 if linhas > 0:
                     print("alturacm:")
                     print(alturacm)
                     print(dataregistro)
+                    print("primeiro registro")
+                    print(dtprimeiroregistro)
+                    print(pesoinicial)
                     anodtregistro = dataregistro[-4:]
                     mesdtregistro = dataregistro[3:5]
                     diadtregistro=dataregistro[0:2]
+                    anoprimeiroregistro = dtprimeiroregistro[-4:]
+                    mesprimeiroregistro = dtprimeiroregistro[3:5]
+                    diaprimeiroregistro = dtprimeiroregistro[0:2]
                     print(anodtregistro)
                     print(mesdtregistro)
                     print(diadtregistro)
                     d1=datetime.date(int(anodtregistro),int(mesdtregistro),int(diadtregistro))
+                    dprimeiroreg=datetime.date(int(anoprimeiroregistro),int(mesprimeiroregistro),int(diaprimeiroregistro))
 
                     datediff=(d1 - dadosusuario['dtnascimento'])
                     idade=round(datediff.days / 365,2)
                     print(idade)
+
+                    datediffperiodo=(d1 - dprimeiroreg)
+                    periodomedicao=round(datediffperiodo.days / 30.5,2)
+                    difpeso=peso - pesoinicial
+                    iniciargrafico=1
+
+
                     #cálculo Fórmula de Harris-Benedict (versão revisada) da taxa metabólica basal
 
                     if dadosusuario['sexo']=='M':
@@ -273,7 +309,7 @@ def ver_comp():
 
                     print(tmb)
 
-                    return render_template('visualizarcomp.html', vdestinatarios=vdestinatarios, dadoscomp=dadoscomp, dadosusuario=dadosusuario, tmb=tmb, dataregistro=dataregistro, tmbsedentario=tmbsedentario, tmbpoucoativo=tmbpoucoativo, tmbativo=tmbativo, tmbmuitoativo=tmbmuitoativo, tmbextremamenteativo=tmbextremamenteativo)
+                    return render_template('visualizarcomp.html', vdestinatarios=vdestinatarios, dadoscomp=dadoscomp, dadosusuario=dadosusuario, tmb=tmb, dataregistro=dataregistro, tmbsedentario=tmbsedentario, tmbpoucoativo=tmbpoucoativo, tmbativo=tmbativo, tmbmuitoativo=tmbmuitoativo, tmbextremamenteativo=tmbextremamenteativo, ncompleto=ncompleto, idusuario=idusuario, periodomedicao=periodomedicao, difpeso=difpeso, graphdtregistro=graphdtregistro, graphpesokg=graphpesokg, iniciargrafico=iniciargrafico)
 
                 else:
                     return render_template('visualizarcomp.html', vdestinatarios=vdestinatarios, dadoscomp=dadoscomp, dadosusuario=dadosusuario)
