@@ -164,7 +164,7 @@ def ver_comp():
             	                univespi3.registros 
                             inner join univespi3.usuarios on registros.regcodusuario = usuarios.codusuario
                             where 
-            	                registros.regcodusuario = % s order by dtregistro desc"""
+            	                registros.regcodusuario = % s order by dtregistro asc"""
             print(idorigem)
             print(sqlorigem)
             cursor.execute(sqlorigem, (idorigem,))
@@ -245,37 +245,30 @@ def ver_comp():
                 for data in dadoscomp:
                     if i==0:
                         if linhas > 0:
+                            dtprimeiroregistro = data['dataregistro']
+                            pesoinicial = data['pesokg']
+
+                    else:
+                        if i == (linhas - 1):
                             alturacm = data['alturam'] * 100
                             dataregistro = data['dataregistro']
                             peso = data['pesokg']
-                    else:
-                        if i == (linhas - 1):
-                            dtprimeiroregistro = data['dataregistro']
-                            pesoinicial = data['pesokg']
                     i=i+1
 
                 if linhas > 0:
-                    print("alturacm:")
-                    print(alturacm)
-                    print(dataregistro)
-                    print("primeiro registro")
-                    print(dtprimeiroregistro)
-                    print(pesoinicial)
+
                     anodtregistro = dataregistro[-4:]
                     mesdtregistro = dataregistro[3:5]
                     diadtregistro=dataregistro[0:2]
                     anoprimeiroregistro = dtprimeiroregistro[-4:]
                     mesprimeiroregistro = dtprimeiroregistro[3:5]
                     diaprimeiroregistro = dtprimeiroregistro[0:2]
-                    print(anodtregistro)
-                    print(mesdtregistro)
-                    print(diadtregistro)
+
                     d1=datetime.date(int(anodtregistro),int(mesdtregistro),int(diadtregistro))
                     dprimeiroreg=datetime.date(int(anoprimeiroregistro),int(mesprimeiroregistro),int(diaprimeiroregistro))
 
                     datediff=(d1 - dadosusuario['dtnascimento'])
                     idade=round(datediff.days / 365,2)
-                    print(idade)
 
                     datediffperiodo=(d1 - dprimeiroreg)
                     periodomedicao=round(datediffperiodo.days / 30.5,2)
